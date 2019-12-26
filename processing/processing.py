@@ -45,18 +45,10 @@ class PreProcessing:
         return data
 
     @staticmethod
-    def read_stormfrontws_data(path_to_csv, path_to_files_dir):
-
-        def read_text(file_id):
-            location = os.path.join(path_to_files_dir, file_id+".txt")
-            if (os.path.exists(location)):
-                with open(location, "r") as f:
-                    return PreProcessing.sanitize_tweet(f.read().strip())
-            return ""
-
+    def read_stormfrontws_data(path_to_csv):
         data = pd.read_csv(path_to_csv)
         new = pd.DataFrame()
-        new["class"] = data["label"].replace(
-            {"noHate": "normal", "hate": "hate speech"})
-        new["tweet"] = data["file_id"].apply(read_text)
+        new["class"] = data[(data["class"] == "hate speech") | (
+            data["class"] == "normal")]["class"]
+        new["tweet"] = data["tweet"]
         return new
